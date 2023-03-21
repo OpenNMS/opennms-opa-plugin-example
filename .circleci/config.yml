@@ -28,8 +28,11 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - publish-github-release
-
+      - publish-github-release:
+          context: 
+            - github-releases
+          requires:
+            - tests
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
