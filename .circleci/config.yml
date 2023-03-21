@@ -33,6 +33,7 @@ workflows:
           notes-file: changelog.md
           tag: 1.0.0
           title: The initial release
+          token: GITHUB_RELEASE_TOKEN
           prerelease: true
           requires:
             - tests
