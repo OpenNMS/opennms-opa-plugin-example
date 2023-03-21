@@ -35,7 +35,7 @@ workflows:
           title: The initial release
           prerelease: true
           requires:
-            - node/test
+            - tests
           context:
             - GITHUB_CREDS
           filters:
