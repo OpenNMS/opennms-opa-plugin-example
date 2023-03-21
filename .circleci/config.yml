@@ -37,7 +37,7 @@ workflows:
           requires:
             - tests
           context:
-            - GITHUB_CREDS
+            - github-releases
           filters:
             branches:
               only:
@@ -148,4 +148,4 @@ jobs:
       - run:
           name: Publish release on GitHub
           command: |
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
+            ghr -t ${GITHUB_RELEASE_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
