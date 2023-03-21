@@ -136,7 +136,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Publish release on GitHub
+          name: Install GitHub CLI and Publish release on GitHub
           command: |
             type -p curl >/dev/null || sudo apt install curl -y
             curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
@@ -144,9 +144,9 @@ jobs:
             && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
             && sudo apt update \
             && sudo apt install gh -y
-            #gh auth login --with-token < mytoken.txt
             cd ~/project
-            gh repo list
-            gh release create v0.0.1 --title "v0.0.1 TEST" --notes "Testing prerelease" --prerelease --generate-notes -R ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+            tag=${CIRCLE_TAG:-default}
+
+            gh release create $tag --title "$tag Release" --notes "Testing prerelease" --prerelease --generate-notes #-R ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
 
             #ghr -t ${GITHUB_RELEASE_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
