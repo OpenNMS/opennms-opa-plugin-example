@@ -30,7 +30,7 @@ workflows:
               only:
                 - /^v.*/
       - gh/release:
-          notes-file: changelog.md
+          #notes-file: changelog.md
           tag: 1.0.0
           title: The initial release
           token: GITHUB_RELEASE_TOKEN
