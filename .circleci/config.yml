@@ -10,7 +10,8 @@ executors:
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
   sign-packages: opennms/sign-packages@2.3.0
-  
+  gh: circleci/github-cli@2.0
+
 workflows:
   build-deploy:
     jobs:
@@ -28,6 +29,20 @@ workflows:
             tags:
               only:
                 - /^v.*/
+      - gh/release:
+          notes-file: changelog.md
+          tag: 1.0.0
+          title: The initial release
+          prerelease: true
+          requires:
+            - node/test
+          context:
+            - GITHUB_CREDS
+          filters:
+            branches:
+              only:
+                - main
+
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
@@ -123,3 +138,14 @@ jobs:
       - run:
           name: Push packages to CloudSmith
           command: .circleci/scripts/publish-cloudsmith.sh
+
+  publish-github-release:
+    executor: github-executor
+    working_directory: ~/project
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Publish release on GitHub
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
