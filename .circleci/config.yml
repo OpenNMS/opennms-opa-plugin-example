@@ -145,7 +145,7 @@ jobs:
             && sudo apt update \
             && sudo apt install gh -y
             cd ~/project
-            tag=${CIRCLE_TAG:-default}
+            tag=${CIRCLE_TAG:-default-`date +%s`}
 
             mkdir ~/output
             find . -type f -regex ".*.jar" -exec cp {} ~/output \;
