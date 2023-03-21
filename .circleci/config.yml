@@ -147,6 +147,9 @@ jobs:
             cd ~/project
             tag=${CIRCLE_TAG:-default}
 
-            gh release create $tag --title "$tag Release" --notes "Testing prerelease" --prerelease --generate-notes #-R ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+            mkdir ~/output
+            find . -type f -regex ".*.jar" -exec cp {} ~/output \;
+
+            gh release create $tag --title "$tag Release" --notes "Testing prerelease" --prerelease --generate-notes #-R ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} ~/output/*.jar
 
             #ghr -t ${GITHUB_RELEASE_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
