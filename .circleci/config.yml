@@ -147,7 +147,6 @@ jobs:
             #gh auth login --with-token < mytoken.txt
             cd ~/project
             gh repo list
-            gh release create v1.2.3 --notes "bugfix release"
-            #gh release create v0.0.1 --title "v0.0.1 TEST" --notes "Testing prerelease" --prerelease --generate-notes
+            gh release create v0.0.1 --title "v0.0.1 TEST" --notes "Testing prerelease" --prerelease --generate-notes -R ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
 
             #ghr -t ${GITHUB_RELEASE_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
