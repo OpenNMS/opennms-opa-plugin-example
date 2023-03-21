@@ -10,7 +10,6 @@ executors:
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
   sign-packages: opennms/sign-packages@2.3.0
-  gh: circleci/github-cli@2.0
 
 workflows:
   build-deploy:
@@ -29,20 +28,7 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - gh/release:
-          #notes-file: changelog.md
-          tag: 1.0.0
-          title: The initial release
-          token: GITHUB_RELEASE_TOKEN
-          prerelease: true
-          requires:
-            - tests
-          context:
-            - github-releases
-          filters:
-            branches:
-              only:
-                - main
+      - publish-github-release
 
       #- deploy-packages:
       #    context: 
@@ -141,7 +127,7 @@ jobs:
           command: .circleci/scripts/publish-cloudsmith.sh
 
   publish-github-release:
-    executor: github-executor
+    executor: docker
     working_directory: ~/project
     steps:
       - attach_workspace:
@@ -149,4 +135,13 @@ jobs:
       - run:
           name: Publish release on GitHub
           command: |
-            ghr -t ${GITHUB_RELEASE_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
+            type -p curl >/dev/null || sudo apt install curl -y
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+            && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+            && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+            && sudo apt update \
+            && sudo apt install gh -y
+            #gh auth login --with-token < mytoken.txt
+            gh release create v0.0.1 --title "v0.0.1 TEST" --notes "Testing prerelease" --prerelease --generate-notes
+
+            #ghr -t ${GITHUB_RELEASE_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
