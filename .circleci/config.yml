@@ -59,11 +59,13 @@ workflows:
           context: 
             - github-releases
           requires:
-            - tests
+            - prepare-release
           filters:
             tags:
               only:
-                - /^v.*/            
+                - /^v.*/
+            branches:
+              ignore: /.*/     
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
