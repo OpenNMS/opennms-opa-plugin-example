@@ -30,8 +30,6 @@ workflows:
               only:
                 - /^v.*/
       - prepare-release:
-          context:
-            - github-releases       
           requires:
             - tests
           filters:
@@ -41,31 +39,31 @@ workflows:
             branches:
               ignore: /.*/
 
-     #- github-cli/release:
-     #    pre-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
-     #      - attach_workspace:
-     #        at: ~/
-     #    context:
-     #      - github-releases      
-     #    token: GH_TOKEN
-     #    tag: $CIRCLE_TAG
-     #    title: The $CIRCLE_TAG release
-     #    files: ~/output/.*.(jar|rpm|kar|deb)
-     #    prerelease: true
-     #    #notes: changelog.md
-     #    requires:
-     #      - prepare-release
-     #    post-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
-     #      - run:
-     #          command: |
-     #            gh release upload $CIRCLE_TAG ~/output/.*.(jar|rpm|kar|deb)
-
-     #    filters:
-     #      tags:
-     #        only:
-     #          - /^v.*/
-     #      branches:
-     #        ignore: /.*/
+      - github-cli/release:
+          pre-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
+            - attach_workspace:
+                at: ~/
+            - run: ls ~/output/.*.(jar|rpm|kar|deb)
+          context:
+            - github-releases      
+          token: GH_TOKEN
+          tag: $CIRCLE_TAG
+          title: The $CIRCLE_TAG release
+          files: ~/output/.*.(jar|rpm|kar|deb)
+          prerelease: true
+          #notes: changelog.md
+          requires:
+            - prepare-release
+          post-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
+            - run:
+                command: |
+                  gh release upload $CIRCLE_TAG ~/output/.*.(jar|rpm|kar|deb)
+          filters:
+            tags:
+              only:
+                - /^v.*/
+            branches:
+              ignore: /.*/
       #- publish-github-release:
       #    context: 
       #      - github-releases
@@ -180,24 +178,8 @@ jobs:
           name: Gather artifacts
           command: |
               mkdir ~/output
-
               # We need a better logic here
               find ~/project -type f -regex ".*.(jar|rpm|kar|deb)" -exec cp {} ~/output \;
-      - github-cli/release:    
-          token: GH_TOKEN
-          tag: $CIRCLE_TAG
-          title: The $CIRCLE_TAG release
-          files: ~/output/.*.(jar|rpm|kar|deb)
-          prerelease: true
-          #notes: changelog.md
-          #requires:
-          #  - prepare-release
-          filters:
-            tags:
-              only:
-                - /^v.*/
-            branches:
-              ignore: /.*/              
       - persist_to_workspace:
           root: ~/
           paths:
