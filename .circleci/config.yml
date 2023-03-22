@@ -49,15 +49,15 @@ workflows:
           token: GH_TOKEN
           tag: $CIRCLE_TAG
           title: The $CIRCLE_TAG release
-          files: ~/output/.*
+          #files: ~/output/.*
           prerelease: true
           #notes: changelog.md
           requires:
             - prepare-release
-          #post-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
-          #  - run:
-          #      command: |
-          #        gh release upload $CIRCLE_TAG ~/output/.*.(jar|rpm|kar|deb)
+          post-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
+            - run:
+                command: |
+                  gh release upload $CIRCLE_TAG ~/output/.*
           filters:
             tags:
               only:
