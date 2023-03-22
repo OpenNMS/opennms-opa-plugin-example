@@ -40,6 +40,8 @@ workflows:
               ignore: /.*/
 
       - github-cli/release:
+          pre-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
+            - *attach_workspace
           context:
             - github-releases      
           token: GH_TOKEN
@@ -50,6 +52,11 @@ workflows:
           #notes: changelog.md
           requires:
             - prepare-release
+          post-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
+            - run:
+                command: |
+                  gh release upload $CIRCLE_TAG ~/output/.*.(jar|rpm|kar|deb)
+
           filters:
             tags:
               only:
