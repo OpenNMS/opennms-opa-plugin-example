@@ -10,6 +10,7 @@ executors:
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
   sign-packages: opennms/sign-packages@2.3.0
+  github-cli: circleci/github-cli@2.2.0
 
 workflows:
   build-deploy:
@@ -28,15 +29,33 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - publish-github-release:
-          context: 
+      - gh/release:
+          context:
             - github-releases
+          token: GH_TOKEN
           requires:
             - tests
           filters:
             tags:
               only:
-                - /^v.*/            
+                - /^v.*/
+            branches:
+              ignore: /.*/
+          #notes: changelog.md
+          tag: << pipeline.git.tag >>
+          title: The << pipeline.git.tag >> release
+          files: ~/output/.*.(jar|rpm|kar|deb)
+          prerelease: true
+
+      #- publish-github-release:
+      #    context: 
+      #      - github-releases
+      #    requires:
+      #      - tests
+      #    filters:
+      #      tags:
+      #        only:
+      #          - /^v.*/            
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
