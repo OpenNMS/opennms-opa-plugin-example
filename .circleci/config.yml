@@ -142,19 +142,29 @@ jobs:
       - run:
           name: Install GitHub CLI and Publish release on GitHub
           command: |
-            type -p curl >/dev/null || sudo apt install curl -y
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
-            && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
-            && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-            && sudo apt update \
-            && sudo apt install gh -y
-            cd ~/project
-            tag=${CIRCLE_TAG:-default-`date +%s`}
+            # Original: tag=${CIRCLE_TAG:-default-`date +%s`}
 
-            mkdir ~/output
-            find ~/project -type f -regex ".*.jar" -exec cp {} ~/output \;
+            tag=${CIRCLE_TAG}
 
-            gh release create $tag --title "$tag Release" --notes "Testing prerelease" --prerelease --generate-notes 
-            gh release upload $tag ~/output/*.jar
+            if [ -z "$tag" ]; then 
+              type -p curl >/dev/null || sudo apt install curl -y
+              curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+              && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+              && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+              && sudo apt update \
+              && sudo apt install gh -y
+              cd ~/project
 
-            #ghr -t ${GITHUB_RELEASE_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./target/artifacts/
+
+              mkdir ~/output
+              find ~/project -type f -regex ".*.jar" -exec cp {} ~/output \;
+
+              gh release create $tag --title "$tag Release" --notes "Testing prerelease" --prerelease --generate-notes 
+              gh release upload $tag ~/output/*.jar
+            else
+              echo "Skipping step as we don't have a tag!"
+            fi
+
+
+
+
