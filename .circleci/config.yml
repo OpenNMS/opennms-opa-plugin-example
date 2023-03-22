@@ -29,7 +29,7 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - gh/release:
+      - github-cli/release:
           context:
             - github-releases
           token: GH_TOKEN
