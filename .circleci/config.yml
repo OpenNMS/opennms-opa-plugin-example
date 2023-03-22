@@ -41,7 +41,8 @@ workflows:
 
       - github-cli/release:
           pre-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
-            - *attach_workspace
+            - attach_workspace:
+              at: ~/
           context:
             - github-releases      
           token: GH_TOKEN
