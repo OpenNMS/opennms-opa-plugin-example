@@ -174,7 +174,10 @@ jobs:
 
               # We need a better logic here
               find ~/project -type f -regex ".*.(jar|rpm|kar|deb)" -exec cp {} ~/output \;
-
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - output
   publish-github-release:
     executor: build-executor
     working_directory: ~/project
