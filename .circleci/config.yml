@@ -41,11 +41,11 @@ workflows:
                 - /^v.*/
             branches:
               ignore: /.*/
-          #notes: changelog.md
-          tag: << pipeline.git.tag >>
-          title: The << pipeline.git.tag >> release
+          tag: << CIRCLE_TAG >>
+          title: The << CIRCLE_TAG >> release
           files: ~/output/.*.(jar|rpm|kar|deb)
           prerelease: true
+          #notes: changelog.md
 
       #- publish-github-release:
       #    context: 
