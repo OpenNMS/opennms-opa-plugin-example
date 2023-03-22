@@ -17,17 +17,17 @@ workflows:
       - build:
           context:
             - gpg-signing
-          filters:
-            tags:
-              only:
-                - /^v.*/
+     #     filters:
+     #       tags:
+     #         only:
+     #           - /^v.*/
       - tests:
           requires:
             - build
-          filters:
-            tags:
-              only:
-                - /^v.*/
+     #     filters:
+     #       tags:
+     #         only:
+     #           - /^v.*/
       - publish-github-release:
           context: 
             - github-releases
@@ -36,7 +36,7 @@ workflows:
           filters:
             tags:
               only:
-                - /^v.*/            
+                - /v.*/            
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
