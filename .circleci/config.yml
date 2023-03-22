@@ -41,8 +41,8 @@ workflows:
                 - /^v.*/
             branches:
               ignore: /.*/
-          tag: << CIRCLE_TAG >>
-          title: The << CIRCLE_TAG >> release
+          tag: $CIRCLE_TAG
+          title: The $CIRCLE_TAG release
           files: ~/output/.*.(jar|rpm|kar|deb)
           prerelease: true
           #notes: changelog.md
