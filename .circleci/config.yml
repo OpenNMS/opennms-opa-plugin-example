@@ -179,7 +179,10 @@ jobs:
           command: |
               mkdir ~/output
               # We need a better logic here
-              find ~/project -type f -regex ".*.(jar|rpm|kar|deb)" -exec cp {} ~/output \;
+              find ~/project -type f -regex ".*.jar" -exec cp {} ~/output \;
+              find ~/project -type f -regex ".*.rpm" -exec cp {} ~/output \;
+              find ~/project -type f -regex ".*.deb" -exec cp {} ~/output \;
+              find ~/project -type f -regex ".*.kar" -exec cp {} ~/output \;
       - persist_to_workspace:
           root: ~/
           paths:
