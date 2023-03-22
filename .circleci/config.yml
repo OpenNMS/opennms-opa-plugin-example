@@ -43,21 +43,21 @@ workflows:
           pre-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
             - attach_workspace:
                 at: ~/
-            - run: ls ~/output/.*.(jar|rpm|kar|deb)
+            - run: ls ~/output/
           context:
             - github-releases      
           token: GH_TOKEN
           tag: $CIRCLE_TAG
           title: The $CIRCLE_TAG release
-          files: ~/output/.*.(jar|rpm|kar|deb)
+          files: ~/output/.*
           prerelease: true
           #notes: changelog.md
           requires:
             - prepare-release
-          post-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
-            - run:
-                command: |
-                  gh release upload $CIRCLE_TAG ~/output/.*.(jar|rpm|kar|deb)
+          #post-steps: #Bug: https://github.com/CircleCI-Public/github-cli-orb/issues/20
+          #  - run:
+          #      command: |
+          #        gh release upload $CIRCLE_TAG ~/output/.*.(jar|rpm|kar|deb)
           filters:
             tags:
               only:
