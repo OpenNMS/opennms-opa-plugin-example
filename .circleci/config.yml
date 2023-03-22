@@ -30,8 +30,6 @@ workflows:
               only:
                 - /^v.*/
       - prepare-release:
-          context:
-            - github-releases
           requires:
             - tests
           filters:
@@ -42,6 +40,8 @@ workflows:
               ignore: /.*/
 
       - github-cli/release:
+          context:
+            - github-releases      
           token: GH_TOKEN
           tag: $CIRCLE_TAG
           title: The $CIRCLE_TAG release
