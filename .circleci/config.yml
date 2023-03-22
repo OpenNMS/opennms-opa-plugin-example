@@ -10,7 +10,7 @@ executors:
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
   sign-packages: opennms/sign-packages@2.3.0
-  github-cli: circleci/github-cli@2.2.0
+  #github-cli: circleci/github-cli@2.2.0
 
 workflows:
   build-deploy:
@@ -38,33 +38,32 @@ workflows:
                 - /^v.*/
             branches:
               ignore: /.*/
-
-      - github-cli/release:
-          context:
-            - github-releases      
-          token: GH_TOKEN
-          tag: $CIRCLE_TAG
-          title: The $CIRCLE_TAG release
-          files: ~/output/.*
-          prerelease: true
-          #notes: changelog.md
-          requires:
-            - prepare-release
-          filters:
-            tags:
-              only:
-                - /^v.*/
-            branches:
-              ignore: /.*/
-      #- publish-github-release:
-      #    context: 
-      #      - github-releases
+      #- github-cli/release:
+      #    context:
+      #      - github-releases      
+      #    token: GH_TOKEN
+      #    tag: $CIRCLE_TAG
+      #    title: The $CIRCLE_TAG release
+      #    files: ~/output/.*
+      #    prerelease: true
+      #    #notes: changelog.md
       #    requires:
-      #      - tests
+      #      - prepare-release
       #    filters:
       #      tags:
       #        only:
-      #          - /^v.*/            
+      #          - /^v.*/
+      #      branches:
+      #        ignore: /.*/
+      - publish-github-release:
+          context: 
+            - github-releases
+          requires:
+            - tests
+          filters:
+            tags:
+              only:
+                - /^v.*/            
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
@@ -201,11 +200,6 @@ jobs:
               && sudo apt update \
               && sudo apt install gh -y
               
-              mkdir ~/output
-
-              # We need a better logic here
-              find ~/project -type f -regex ".*.(jar|rpm|kar|deb)" -exec cp {} ~/output \;
-
               gh release create $tag --title "$tag Release" --notes "$tag prerelease!" --prerelease --generate-notes 
 
               gh release upload $tag ~/output/*.jar
