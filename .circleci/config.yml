@@ -33,6 +33,10 @@ workflows:
             - github-releases
           requires:
             - tests
+          filters:
+            tags:
+              only:
+                - /^v.*/            
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
