@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.opennms.opa.plugins.example</groupId>
-        <artifactId>assembly</artifactId>
+        <groupId>org.opennms.plugin.opa</groupId>
+        <artifactId>org.opennms.plugin.opa.example</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.opa.plugins.example.assembly</groupId>
-    <artifactId>org.opennms.opa.plugins.example.assembly.sentinel.rpm</artifactId>
-    <name>OpenNMS :: Plugins :: Example :: Assembly :: Sentinel RPM</name>
+    <groupId>org.opennms.plugin.opa.example.assembly</groupId>
+    <artifactId>org.opennms.plugin.opa.example.assembly.sentinel.rpm</artifactId>
+    <name>OpenNMS :: OPA :: Example :: Assembly :: Sentinel RPM</name>
     <packaging>pom</packaging>
 
     <build>
@@ -110,8 +110,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.opa.plugins.example.assembly</groupId>
-            <artifactId>org.opennms.opa.plugins.example.assembly.kar</artifactId>
+            <groupId>org.opennms.opa.plugin.example.assembly</groupId>
+            <artifactId>org.opennms.opa.plugin.example.assembly.kar</artifactId>
             <version>${project.version}</version>
             <type>kar</type>
         </dependency>

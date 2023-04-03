@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="openmms-plugin-opa-features" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+
+    <!-- common for Core and Sentinel -->
+    <feature name="openmms-plugin-opa-common" description="OpenNMS :: OPA :: Plugin :: Common" version="${project.version}">
+        <feature dependency="true">aries-blueprint</feature>
+        <feature dependency="true">shell</feature>
+        <feature version="${opennms.api.version}" dependency="true">opennms-integration-api</feature>
+        <!--bundle>mvn:org.opennms.plugin.opa.example.core/core/${project.version}</bundle-->
+    </feature>
+
+    <!-- to be installed into OpenNMS core -->
+    <!--feature name="openmms-plugin-opa-core" description="OpenNMS :: OPA :: Plugin :: Core" version="${project.version}">
+        <feature version="${project.version}">opennms-plugin-opa-core</feature>
+        <bundle>mvn:org.opennms.plugin.opa.example.core/core/${project.version}</bundle>
+    </feature-->
+
+
+</features>

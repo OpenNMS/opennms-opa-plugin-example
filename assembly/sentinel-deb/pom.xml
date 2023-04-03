@@ -1,13 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.opennms.opa.plugin.example</groupId>
-        <artifactId>assembly</artifactId>
+        <groupId>org.opennms.plugin.opa</groupId>
+        <artifactId>org.opennms.plugin.opa.example</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.opa.plugin.example.assembly</groupId>
-    <artifactId>org.opennms.opa.plugin.example.assembly.sentinel.deb</artifactId>
-    <name>OpenNMS :: Plugins :: Example :: Assembly :: Sentinel Deb</name>
+    <groupId>org.opennms.plugin.opa.example.assembly</groupId>
+    <artifactId>org.opennms.plugin.opa.example.assembly.sentinel.deb</artifactId>
+    <name>OpenNMS :: OPA :: Example :: Assembly :: Sentinel Deb</name>
     <packaging>pom</packaging>
 
     <build>
@@ -79,12 +80,11 @@
                         </goals>
                         <configuration>
                             <sourceFile>
-                               ${project.build.directory}/releases/${project.artifactId}-${project.version}/opennms-opa-plugin-example/org.opennms.opa.plugins.example.assembly-${project.version}.kar
+                                ${project.build.directory}/releases/${project.artifactId}-${project.version}/opennms-opa-plugin-example/org.opennms.opa.plugin.example.assembly.kar-${project.version}.kar
                             </sourceFile>
                             <destinationFile>
-                                ${project.build.directory}/deb/usr/share/sentinel/deploy/opennms-opa-plugin-example.kar
-                            </destinationFile>
-                        </configuration>
+                                ${project.build.directory}/deb/usr/share/opennms/deploy/org.opennms.opa.plugin.example.assembly-${project.version}.kar
+                            </destinationFile>                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -116,8 +116,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.opa.plugins.example.assembly</groupId>
-            <artifactId>org.opennms.opa.plugins.example.assembly.kar</artifactId>
+            <groupId>org.opennms.opa.plugin.example.assembly</groupId>
+            <artifactId>org.opennms.opa.plugin.example.assembly.kar</artifactId>
             <version>${project.version}</version>
             <type>kar</type>
         </dependency>
