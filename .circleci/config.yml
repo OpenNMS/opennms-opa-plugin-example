@@ -39,15 +39,16 @@ workflows:
           requires:
             - build
             - tests
-          filters:
-            tags:
-              only:
-                - /release-.*/
-            branches:
-              only:
-                - main
-                - /release-.*/
-                - /.*-package/
+          #filters:
+          #  tags:
+          #    only:
+          #      - /release-.*/
+          #  branches:
+          #    only:
+          #      - main
+          #      - /release-.*/
+          #      - /.*-package/
+
       - prepare-release:
           requires:
             - tests
