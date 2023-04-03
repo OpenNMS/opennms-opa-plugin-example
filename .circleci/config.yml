@@ -285,9 +285,8 @@ jobs:
       - run:
           name: Gather artifacts
           command: |
-            mkdir -p ~/dist/
-            cp assembly/opennms-deb/target/opennms-opa-plugin-example*.deb ~/dist/
-            cp assembly/sentinel-deb/target/opennms-opa-plugin-example_*.deb ~/dist/
+            mkdir -p ~/output
+            find ~/project -type f -regex ".*.deb" -exec cp {} ~/output \;
 
       - store_artifacts:
           path: ~/dist
