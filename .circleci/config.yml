@@ -256,16 +256,16 @@ jobs:
           name: Build Debian packages
           command: |
             # avoid release-[0-9].x go into release
-            if [[ ! << pipeline.git.branch >> =~ ^release-[0-9.]*$ ]]; then
-              MVN_OPTIONS="-Psnapshot"
-            else
-              MVN_OPTIONS="-Prelease"
-              BUILD_NUMBER=$(echo '<< pipeline.git.branch >>' | sed -e 's/release-[^-]*-*//')
-              if [[ -z "$BUILD_NUMBER" ]]; then
-                BUILD_NUMBER=1
-              fi
-              MVN_OPTIONS="${MVN_OPTIONS} -DbuildNumber=${BUILD_NUMBER}"
-            fi
+            ##if [[ ! << pipeline.git.branch >> =~ ^release-[0-9.]*$ ]]; then
+            ##  MVN_OPTIONS="-Psnapshot"
+            ##else
+            ##  MVN_OPTIONS="-Prelease"
+            ##  BUILD_NUMBER=$(echo '<< pipeline.git.branch >>' | sed -e 's/release-[^-]*-*//')
+            ##  if [[ -z "$BUILD_NUMBER" ]]; then
+            ##    BUILD_NUMBER=1
+            ##  fi
+            ##  MVN_OPTIONS="${MVN_OPTIONS} -DbuildNumber=${BUILD_NUMBER}"
+            ##fi
             mvn install ${MVN_OPTIONS} --also-make -DskipTests=true -Dbuild.packages
 
       - run:
