@@ -266,7 +266,7 @@ jobs:
               fi
               MVN_OPTIONS="${MVN_OPTIONS} -DbuildNumber=${BUILD_NUMBER}"
             fi
-            mvn install ${MVN_OPTIONS} --projects org.opennms.plugin.opa.example.assembly:org.opennms.plugin.opa.example.assembly.deb,org.opennms.plugin.opa.example.assembly:org.org.opennms.plugin.opa.example.assembly.sentinel.deb --also-make -DskipTests=true -Dbuild.packages
+            mvn install ${MVN_OPTIONS} --projects org.opennms.plugin.opa.example.assembly:org.opennms.plugin.opa.example.assembly.deb,org.opennms.plugin.opa.example.assembly:org.opennms.plugin.opa.example.assembly.sentinel.deb --also-make -DskipTests=true -Dbuild.packages
 
       - run:
           name: Remove old artifacts to keep workspace size down
