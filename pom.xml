@@ -77,6 +77,10 @@
         <!-- maximum OPA version this plugin supports (exclusive) -->
         <opennms.api.version.max>2.0.0</opennms.api.version.max>
         <opennms.api.version>${opennms.api.version.min}</opennms.api.version>
+
+        <!-- debian plugin -->
+        <debian.maven.plugin.version>1.0.21</debian.maven.plugin.version>
+        
     </properties>
 
     <dependencyManagement>
