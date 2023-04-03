@@ -37,7 +37,6 @@ workflows:
       - build-debian:
           context: "OpenNMS Build"
           requires:
-            - build
             - tests
           #filters:
           #  tags:
@@ -265,7 +264,7 @@ jobs:
               fi
               MVN_OPTIONS="${MVN_OPTIONS} -DbuildNumber=${BUILD_NUMBER}"
             fi
-            mvn install ${MVN_OPTIONS} --projects org.opennms.plugins.TEMPLATE.assembly:org.opennms.plugins.TEMPLATE.assembly.opennms.deb,org.opennms.plugins.TEMPLATE.assembly:org.opennms.plugins.TEMPLATE.assembly.sentinel.deb --also-make -DskipTests=true -Dbuild.packages
+            mvn install ${MVN_OPTIONS} --projects org.opennms.opa.plugins.example.assembly:org.opennms.opa.plugins.example.assembly.opennms.deb,org.opennms.opa.plugins.example.assembly:org.opennms.opa.plugins.example.assembly.sentinel.deb --also-make -DskipTests=true -Dbuild.packages
 
       - run:
           name: Remove old artifacts to keep workspace size down
@@ -285,8 +284,8 @@ jobs:
           name: Gather artifacts
           command: |
             mkdir -p ~/dist/
-            cp assembly/opennms-deb/target/opennms-plugin-TEMPLATE_*.deb ~/dist/
-            cp assembly/sentinel-deb/target/sentinel-plugin-TEMPLATE_*.deb ~/dist/
+            cp assembly/opennms-deb/target/opennms-opa-plugin-example*.deb ~/dist/
+            cp assembly/sentinel-deb/target/opennms-opa-plugin-example_*.deb ~/dist/
 
       - store_artifacts:
           path: ~/dist
