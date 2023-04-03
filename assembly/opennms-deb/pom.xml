@@ -30,7 +30,7 @@
                         <packageName>opennms-opa-plugin-example</packageName><!-- align with other plugin name -->
                         <packageVersion>${package.version}-${package.buildNumber}</packageVersion>
                         <packageSection>contrib/net</packageSection>
-                        <packageTitle>OpenNMS :: Plugins :: Example Plugin</packageTitle>
+                        <packageTitle>OpenNMS :: OPA :: Example</packageTitle>
                         <packageDescription>opennms-opa-plugin-example</packageDescription>
                         <packageDependencies>
                             <packageDependency>opennms-server</packageDependency>
