@@ -6,6 +6,11 @@ executors:
       - image: cimg/openjdk:11.0.13
         environment:
           MAVEN_OPTS: -Xmx1g
+  build-debian-executor:
+    docker:
+      - image: cimg/openjdk:11.0
+        environment:
+          MAVEN_OPTS: -Xmx2g
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
@@ -29,6 +34,20 @@ workflows:
             tags:
               only:
                 - /^v.*/
+      - build-debian:
+          context: "OpenNMS Build"
+          requires:
+            - build
+            - tests
+          filters:
+            tags:
+              only:
+                - /release-.*/
+            branches:
+              only:
+                - main
+                - /release-.*/
+                - /.*-package/
       - prepare-release:
           requires:
             - tests
@@ -207,6 +226,75 @@ jobs:
               gh release upload $tag ~/output/*.jar
             fi
 
+
+  build-debian:
+    executor: build-debian-executor
+
+    steps:
+      - attach_workspace:
+          at: ~/
+
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
+          use_sudo: true
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+
+      - restore_cache:
+          keys:
+            # Use a separate cache, since the the other build image runs as root
+            - v4-deb-dependencies-{{ checksum "pom.xml" }}
+            - v4-deb-dependencies-
+
+      - run:
+          name: Install fakeroot
+          command: sudo apt install -y fakeroot 
+
+      - run:
+          name: Build Debian packages
+          command: |
+            # avoid release-[0-9].x go into release
+            if [[ ! << pipeline.git.branch >> =~ ^release-[0-9.]*$ ]]; then
+              MVN_OPTIONS="-Psnapshot"
+            else
+              MVN_OPTIONS="-Prelease"
+              BUILD_NUMBER=$(echo '<< pipeline.git.branch >>' | sed -e 's/release-[^-]*-*//')
+              if [[ -z "$BUILD_NUMBER" ]]; then
+                BUILD_NUMBER=1
+              fi
+              MVN_OPTIONS="${MVN_OPTIONS} -DbuildNumber=${BUILD_NUMBER}"
+            fi
+            mvn install ${MVN_OPTIONS} --projects org.opennms.plugins.TEMPLATE.assembly:org.opennms.plugins.TEMPLATE.assembly.opennms.deb,org.opennms.plugins.TEMPLATE.assembly:org.opennms.plugins.TEMPLATE.assembly.sentinel.deb --also-make -DskipTests=true -Dbuild.packages
+
+      - run:
+          name: Remove old artifacts to keep workspace size down
+          command: .circleci/scripts/clean-dir.sh "$HOME/.m2/repository"
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v4-deb-dependencies-{{ checksum "pom.xml" }}
+
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_key: opennms@opennms.org
+          packages: assembly/*-deb/target/*.deb
+
+      - run:
+          name: Gather artifacts
+          command: |
+            mkdir -p ~/dist/
+            cp assembly/opennms-deb/target/opennms-plugin-TEMPLATE_*.deb ~/dist/
+            cp assembly/sentinel-deb/target/sentinel-plugin-TEMPLATE_*.deb ~/dist/
+
+      - store_artifacts:
+          path: ~/dist
+          destination: dist
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/assembly/
 
 
 
