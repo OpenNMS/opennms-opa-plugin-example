@@ -35,7 +35,9 @@ workflows:
               only:
                 - /^v.*/
       - build-debian:
-          context: "OpenNMS Build"
+          context: 
+           - "OpenNMS Build"
+           - gpg-signing
           requires:
             - tests
           #filters:
