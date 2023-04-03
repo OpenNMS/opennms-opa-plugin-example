@@ -78,9 +78,14 @@
         <opennms.api.version.max>2.0.0</opennms.api.version.max>
         <opennms.api.version>${opennms.api.version.min}</opennms.api.version>
 
-        <!-- debian plugin -->
+        <!-- debian/rpm plugin -->
         <debian.maven.plugin.version>1.0.21</debian.maven.plugin.version>
-        
+        <package.version>${project.version}</package.version>
+        <package.buildNumber>${maven.build.timestamp}</package.buildNumber><!-- rpm > release  deb > bundle in version -->
+        <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
+        <package.opennms.description>OpenNMS Example plugin</package.opennms.description>
+        <package.sentinel.description>OpenNMS Example plugin</package.sentinel.description>
+
     </properties>
 
     <dependencyManagement>
