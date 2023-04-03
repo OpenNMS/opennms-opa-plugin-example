@@ -115,5 +115,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.integration.api</groupId>
+            <artifactId>karaf-features</artifactId>
+            <version>${opennms.api.version}</version>
+            <type>xml</type>
+            <scope>provided</scope>
+        </dependency>
 </dependencies>
 </project>

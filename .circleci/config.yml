@@ -225,7 +225,7 @@ jobs:
               
               gh release create $tag --title "$tag Release" --notes "$tag prerelease!" --prerelease --generate-notes 
 
-              gh release upload $tag ~/output/*.jar
+              gh release upload $tag ~/output/*
             fi
 
 

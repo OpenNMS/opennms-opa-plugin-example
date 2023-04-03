@@ -5,7 +5,7 @@
     <feature name="openmms-plugin-opa-common" description="OpenNMS :: OPA :: Plugin :: Common" version="${project.version}">
         <feature dependency="true">aries-blueprint</feature>
         <feature dependency="true">shell</feature>
-        <feature version="${opennms.api.version}" dependency="true">opennms-integration-api</feature>
+        <feature version="${opennms.api.version.min}" dependency="true">opennms-integration-api</feature>
         <!--bundle>mvn:org.opennms.plugin.opa.example.core/core/${project.version}</bundle-->
     </feature>
 
