@@ -291,8 +291,8 @@ jobs:
             find ~/project -type f -regex ".*.rpm" -exec cp {} ~/output \;
 
       - store_artifacts:
-          path: ~/dist
-          destination: dist
+          path: ~/output
+          destination: output
 
       - persist_to_workspace:
           root: ~/
