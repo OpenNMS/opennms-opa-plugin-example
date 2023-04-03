@@ -7,7 +7,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.opa.plugin.example.assembly</groupId>
-    <artifactId>org.opennms.opa.plugin.example.assembly.opennms.rpm</artifactId>
+    <artifactId>org.opennms.opa.plugin.example.assembly.rpm</artifactId>
     <name>OpenNMS :: OPA :: Example :: Assembly :: OpenNMS RPM</name>
     <packaging>pom</packaging>
 
