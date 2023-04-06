@@ -98,6 +98,15 @@ jobs:
           name: Compile source without tests
           command: |
             mvn -DskipITs=true -DskipTests=true clean install
+      - run:
+          name: Gather artifacts
+          command: |
+              mkdir ~/output
+              # We need a better logic here
+              find ~/project -type f -regex ".*.jar" -exec cp {} ~/output \;
+              find ~/project -type f -regex ".*.rpm" -exec cp {} ~/output \;
+              find ~/project -type f -regex ".*.deb" -exec cp {} ~/output \;
+              find ~/project -type f -regex ".*.kar" -exec cp {} ~/output \;
       - save_cache:
           paths:
             - ~/.m2
@@ -105,11 +114,12 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
+            - output
             - .m2
             - project
-      #- store_artifacts:
-      #    path: ~/kar
-      #    destination: artifact-file
+      - store_artifacts:
+          path: ~/output
+          destination: artifact-file
 
   tests:
     executor: build-executor
