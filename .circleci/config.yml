@@ -118,6 +118,9 @@ jobs:
       - run:
           name: Compile source without tests
           command: |
+            POM_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
+            echo "POM_VERSION: $POM_VERSION"
+
             mvn -DskipITs=true -DskipTests=true clean install
       - save_cache:
           paths:
