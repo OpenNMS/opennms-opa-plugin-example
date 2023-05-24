@@ -130,7 +130,7 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            mvn -DskipITs=false -DskipTests=false clean install test 
+            mvn -DskipITs=false -DskipTests=false clean install
       - run:
           name: Save test results
           command: |
