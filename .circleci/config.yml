@@ -3,14 +3,13 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cimg/openjdk:11.0.13
+      - image: cimg/openjdk:11.0
         environment:
           MAVEN_OPTS: -Xmx1g
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
   sign-packages: opennms/sign-packages@2.3.0
-  #github-cli: circleci/github-cli@2.2.0
 
 workflows:
   build-deploy:
@@ -37,24 +36,9 @@ workflows:
               only:
                 - /^v.*/
             branches:
-              ignore: /.*/
-      #- github-cli/release:
-      #    context:
-      #      - github-releases      
-      #    token: GH_TOKEN
-      #    tag: $CIRCLE_TAG
-      #    title: The $CIRCLE_TAG release
-      #    files: ~/output/.*
-      #    prerelease: true
-      #    #notes: changelog.md
-      #    requires:
-      #      - prepare-release
-      #    filters:
-      #      tags:
-      #        only:
-      #          - /^v.*/
-      #      branches:
-      #        ignore: /.*/
+              only:
+                - /^main.*/
+                - /^release-.*/
       - publish-github-release:
           context: 
             - github-releases
@@ -66,6 +50,20 @@ workflows:
                 - /^v.*/
             branches:
               ignore: /.*/     
+      - deploy-maven:
+          context: 
+            - gpg-signing
+            - "OSSRH Principal"
+          requires:
+            - prepare-release
+          filters:
+            tags:
+              only:
+                - /^v.*/
+            branches:
+              only:
+                - /^main.*/
+                - /^release-.*/
       #- deploy-packages:
       #    context: 
       #      - gpg-signing
@@ -79,9 +77,54 @@ workflows:
       #          - /^v.*/
       #      branches:
       #        only:
-      #          - main
-      #          - /release-.*/
+      #          - /^main.*/
+      #          - /^release-.*/
 
+commands:
+  create-mega-pom:
+    steps:
+      - run:
+          name: Create mega-POM for checksumming
+          command: git grep -l '<modelVersion>' | grep pom.xml | sort -u | xargs cat > /tmp/mega-pom.txt
+  gather-artifacts:
+    steps:
+      - run:
+          name: Gather artifacts
+          command: |
+              mkdir -p ~/output
+              find ~/project \
+                   -type f \
+                   \
+                   -name \*.jar -o \
+                   -name \*.kar -o \
+                   -name \*.rpm -o \
+                   -name \*.deb \
+                   \
+                   -exec cp {} ~/output/ \
+              \;
+  release-lint:
+    steps:
+      - run:
+          name: Check for common release issues
+          command: |
+            curl -L -o /tmp/release-lint.sh https://raw.githubusercontent.com/OpenNMS/opennms-repo/master/script/release-lint.sh
+            chmod 755 /tmp/release-lint.sh
+
+            LINT_WARN_ONLY=1
+            if [ -n "${CIRCLE_TAG}" ]; then
+              LINT_WARN_ONLY=0
+            fi
+            case "${CIRCLE_BRANCH}" in
+              main-*)
+                LINT_WARN_ONLY=0
+                ;;
+            esac
+
+            if [ "${LINT_WARN_ONLY}" -eq 1 ]; then
+              /tmp/release-lint.sh -w
+            else
+              /tmp/release-lint.sh
+            fi
 
 jobs:
   build:
@@ -89,28 +132,21 @@ jobs:
     resource_class: small
     steps:
       - checkout
+      - create-mega-pom
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-{{ checksum "/tmp/mega-pom.txt" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run:
           name: Compile source without tests
           command: |
             mvn -DskipITs=true -DskipTests=true clean install
-      - run:
-          name: Gather artifacts
-          command: |
-              mkdir ~/output
-              # We need a better logic here
-              find ~/project -type f -regex ".*.jar" -exec cp {} ~/output \;
-              find ~/project -type f -regex ".*.rpm" -exec cp {} ~/output \;
-              find ~/project -type f -regex ".*.deb" -exec cp {} ~/output \;
-              find ~/project -type f -regex ".*.kar" -exec cp {} ~/output \;
+      - gather-artifacts
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
+          key: v1-dependencies-{{ checksum "/tmp/mega-pom.txt" }}
       - persist_to_workspace:
           root: ~/
           paths:
@@ -141,20 +177,23 @@ jobs:
       - store_test_results:
           path: ~/junit
 
-  deploy:
+  deploy-maven:
     executor: build-executor
     steps:
       - checkout
-
+      - create-mega-pom
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
+            - v1-dependencies-{{ checksum "/tmp/mega-pom.txt" }}
 
       - sign-packages/setup-env:
           skip_if_forked_pr: true
       - run:
-          name: Deploy to Maven
+          name: Deploy to Maven Central
           command: |
+            mkdir -p ~/.m2
+            echo "${GPG_SECRET_KEY}" | base64 -d > ~/.m2/sign-key.asc
+            export SIGN_KEY_PASS="$(echo "${GPG_PASSPHRASE}" | base64 -d)"
             mvn -Prelease -s .circleci/.circleci.settings.xml -Ddisable.checkstyle=true -DskipTests -Dmaven.verify.skip=true -Dmaven.install.skip=true deploy
 
   deploy-packages:
@@ -177,19 +216,13 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: Gather artifacts
-          command: |
-              mkdir ~/output
-              # We need a better logic here
-              find ~/project -type f -regex ".*.jar" -exec cp {} ~/output \;
-              find ~/project -type f -regex ".*.rpm" -exec cp {} ~/output \;
-              find ~/project -type f -regex ".*.deb" -exec cp {} ~/output \;
-              find ~/project -type f -regex ".*.kar" -exec cp {} ~/output \;
+      - release-lint
+      - gather-artifacts
       - persist_to_workspace:
           root: ~/
           paths:
             - output
+
   publish-github-release:
     executor: build-executor
     working_directory: ~/project
@@ -212,9 +245,11 @@ jobs:
               && sudo apt update \
               && sudo apt install gh -y
               
+              echo "* creating release from $tag tag"
               gh release create $tag --title "$tag Release" --notes "$tag prerelease!" --prerelease --generate-notes 
 
-              gh release upload $tag ~/output/*.jar
+              echo "* uploading files to tag:" ~/output/*
+              gh release upload $tag ~/output/*
             fi
 
 
